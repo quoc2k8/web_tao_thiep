@@ -1,0 +1,27 @@
+<!-- home.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Form lưu DB</title>
+</head>
+<body>
+
+<h1>Nhập tên + lời chúc</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    <input type="text" name="ten" placeholder="Nhập tên người cần chúc" required>
+    <br><br>
+    <input type="text" name="loichuc" placeholder="Nhập lời chúc">
+    <br><br>
+    <input type="radio" name="loai" value="newyear" checked> Thiệp năm mới
+    <input type="radio" name="loai" value="birthday"> Thiệp chúc mừng sinh nhật
+    <br><br>
+    <button type="submit">Lưu</button>
+</form>
+
+<a href="{% url 'web_chuc_random:show_logs' %}">Xem dữ liệu</a>
+
+</body>
+</html>

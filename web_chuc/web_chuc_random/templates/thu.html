@@ -1,0 +1,21 @@
+<!-- log_detail.html -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Log {{ log.id }}</title>
+    </head>
+    <body>
+
+        <!-- <h1>Chi tiết log</h1> -->
+
+        <!-- <p><strong>ID:</strong> {{ log.id }}</p>
+        <p><strong>Ngày:</strong> {{ log.date }}</p>
+        <p><strong>Tên:</strong> {{ log.who }}</p>
+        <p><strong>Lời chúc:</strong> {{ log.loi_chuc }}</p> -->
+        {% with theme=log.loai|default:"birthday" %}
+            {% include "themes/"|add:theme|add:".html" %}
+        {% endwith %}
+
+
+    </body>
+</html>

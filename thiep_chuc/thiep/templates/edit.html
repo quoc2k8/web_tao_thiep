@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chỉnh sửa thiệp của {{ info.person_name }}</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #74ebd5, #acb6e5);
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            width: 500px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 10px;
+            width: 35%;
+            color: #444;
+            vertical-align: top;
+        }
+
+        td {
+            padding: 10px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .radio-group label {
+            margin-right: 15px;
+            cursor: pointer;
+        }
+
+        .actions {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        button {
+            background: #4e73df;
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            font-size: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #2e59d9;
+            transform: translateY(-2px);
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 15px;
+            text-align: center;
+            width: 100%;
+            color: #555;
+            text-decoration: none;
+        }
+
+        .back:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>✏️ Chỉnh sửa thiệp</h1>
+
+    <form action="{% url 'thiep:update_id' info.id %}" method="post">
+        {% csrf_token %}
+
+        <table>
+            <tr>
+                <th>Ngày tạo</th>
+                <td>{{ info.date }}</td>
+            </tr>
+
+            <tr>
+                <th>Tên người được gửi</th>
+                <td>
+                    <input type="text" name="name" value="{{ info.person_name }}">
+                </td>
+            </tr>
+
+            <tr>
+                <th>Lời chúc</th>
+                <td>
+                    <textarea name="cau_chuc" rows="6">{{ info.cau_chuc }}</textarea>
+                </td>
+            </tr>
+
+            <tr>
+                <th>Loại thiệp</th>
+                <td class="radio-group">
+                    <input type="radio" name="loai_thiep" value="birthday" id="birthday"
+                        {% if info.loai_thiep == 'birthday' %}checked{% endif %}>
+                    <label for="birthday">Thiệp sinh nhật</label>
+
+                    <input type="radio" name="loai_thiep" value="newyear" id="newyear"
+                        {% if info.loai_thiep == 'newyear' %}checked{% endif %}>
+                    <label for="newyear">Thiệp năm mới</label>
+                </td>
+            </tr>
+        </table>
+
+        <div class="actions">
+            <button type="submit">💾 Lưu thay đổi</button>
+        </div>
+    </form>
+
+    <a href="{% url 'thiep:create' %}" class="back">← Quay lại danh sách</a>
+</div>
+
+</body>
+</html>

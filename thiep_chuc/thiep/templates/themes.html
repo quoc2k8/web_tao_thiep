@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>themes</title>
+    </head>
+    <body>
+        {% with theme=log.loai|default:"birthday" %}
+            {% include "themes/"|add:info.loai_thiep|add:".html"%}
+        {% endwith %}
+    </body>
+</html>

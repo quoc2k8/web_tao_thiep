@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<!-- Chặn zoom -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Happy Birthday!</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Pacifico&family=Quicksand:wght@600&display=swap" rel="stylesheet">
+
+<style>
+    /* --- CẤU HÌNH TỶ LỆ VMIN --- */
+    :root {
+        --env-width: 60vmin; 
+        --env-height: 40vmin;
+        --bg-color: radial-gradient(circle at center, #2b32b2, #1488cc);
+        --env-color: #d63031; /* Đỏ đô */
+        --flap-color: #ff7675; /* Hồng cam */
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        width: 100vw;
+        background: var(--bg-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Quicksand', sans-serif;
+        overflow: hidden;
+    }
+
+    /* --- PHONG BÌ --- */
+    .envelope-wrapper {
+        position: relative;
+        cursor: pointer;
+        transform: translateY(10vmin); 
+    }
+
+    .envelope {
+        position: relative;
+        width: var(--env-width);
+        height: var(--env-height);
+        background: var(--env-color);
+        border-radius: 1vmin;
+        box-shadow: 0 2vmin 5vmin rgba(0,0,0,0.4);
+    }
+
+    .flap {
+        position: absolute;
+        top: 0; left: 0; width: 0; height: 0;
+        border-left: calc(var(--env-width) / 2) solid transparent;
+        border-right: calc(var(--env-width) / 2) solid transparent;
+        border-top: calc(var(--env-height) * 0.6) solid var(--flap-color);
+        transform-origin: top;
+        transition: transform 0.6s ease-in-out, z-index 0.2s;
+        z-index: 5;
+    }
+
+    /* Túi kín 4 cạnh */
+    .pocket {
+        position: absolute;
+        bottom: 0; left: 0; width: 0; height: 0;
+        border-left: calc(var(--env-width) / 2) solid var(--env-color);
+        border-right: calc(var(--env-width) / 2) solid var(--env-color);
+        border-bottom: calc(var(--env-height) * 0.55) solid #b71540;
+        border-top: calc(var(--env-height) * 0.55) solid transparent;
+        border-radius: 0 0 1vmin 1vmin;
+        z-index: 4;
+    }
+
+    .seal {
+        position: absolute;
+        top: calc(var(--env-height) * 0.6); 
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 10vmin; height: 10vmin;
+        background: #f1c40f;
+        border-radius: 50%;
+        z-index: 6;
+        display: flex; justify-content: center; align-items: center;
+        font-size: 5vmin;
+        border: 0.5vmin solid #e67e22;
+        box-shadow: 0 1vmin 2vmin rgba(0,0,0,0.2);
+        transition: opacity 0.4s;
+    }
+
+    /* --- THIỆP --- */
+    .card {
+        position: absolute;
+        bottom: 0; left: 50%;
+        transform: translateX(-50%);
+        width: calc(var(--env-width) * 0.9);
+        height: calc(var(--env-height) * 0.85); 
+        background: #fff;
+        border-radius: 1vmin;
+        transition: all 1s ease-in-out;
+        z-index: 2;
+        padding: 2vmin;
+        box-sizing: border-box;
+        overflow: hidden;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+        box-shadow: 0 1vmin 2vmin rgba(0,0,0,0.1);
+    }
+
+    .card h1 {
+        font-family: 'Pacifico', cursive;
+        color: #d63031; margin: 0;
+        font-size: 5vmin; line-height: 1.2;
+    }
+    .card p {
+        font-family: 'Dancing Script', cursive;
+        font-size: 3.5vmin; color: #333; margin: 1vmin 0;
+    }
+
+    /* --- ANIMATION --- */
+    .envelope-wrapper.open .flap { transform: rotateX(180deg); z-index: 1; }
+    .envelope-wrapper.open .seal { opacity: 0; }
+    .envelope-wrapper.open .card {
+        z-index: 100;
+        animation: cardFlyOut 1.5s forwards; 
+        animation-delay: 0.5s;
+        overflow: visible;
+    }
+
+    @keyframes cardFlyOut {
+        0% { bottom: 0; transform: translateX(-50%) scale(1); }
+        40% { bottom: 20vmin; transform: translateX(-50%) scale(1); }
+        100% {
+            bottom: 50%; 
+            transform: translate(-50%, 50%) scale(1.5); 
+            box-shadow: 0 5vmin 10vmin rgba(0,0,0,0.5);
+        }
+    }
+
+    .hint-text {
+        position: absolute; bottom: -15vmin; width: 100%; text-align: center;
+        color: white; font-size: 4vmin; animation: pulse 1s infinite;
+    }
+    @keyframes pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
+
+    #canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div class="envelope-wrapper" id="envelope" onclick="openEnvelope()">
+    <div class="envelope">
+        <div class="flap"></div>
+        <div class="seal">❤️</div>
+        <div class="pocket"></div>
+        <div class="card">
+            <h1>Happy Birthday<br>{{ info.person_name }}</h1>
+            <p>{{ info.cau_chuc }}</p>
+            <div style="font-size: 6vmin; margin-top: 1vmin;">🎂 🎉 🎁</div>
+        </div>
+    </div>
+    <div class="hint-text">Chạm để mở thư 👆</div>
+</div>
+
+<script>
+    let isOpened = false;
+    let isGentleMode = false; // Biến kiểm soát chế độ nhẹ nhàng
+
+    function openEnvelope() {
+        if (isOpened) return;
+        isOpened = true;
+        const envelope = document.getElementById('envelope');
+        const hint = document.querySelector('.hint-text');
+        
+        envelope.classList.add('open');
+        hint.style.display = 'none';
+
+        // 1. Kích hoạt pháo hoa nổ lớn sau 1.2s
+        setTimeout(() => { fireworks(); }, 1200);
+
+        // 2. Kích hoạt chế độ nhẹ nhàng (tim bay) sau 5s (khi pháo hoa đã vãn)
+        setTimeout(() => { isGentleMode = true; }, 5000);
+    }
+
+    // --- CANVAS ENGINE ---
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    let W = window.innerWidth;
+    let H = window.innerHeight;
+    canvas.width = W; canvas.height = H;
+
+    let particles = [];      // Mảng chứa pháo hoa nổ
+    let gentleParticles = []; // Mảng chứa tim bay nhẹ nhàng
+
+    // --- CLASS 1: PHÁO HOA NỔ (Heavy) ---
+    const colors = ["#ffbe0b", "#fb5607", "#ff006e", "#8338ec", "#3a86ff"];
+    class FireworkParticle {
+        constructor() {
+            this.x = W / 2; this.y = H / 2;
+            this.vx = (Math.random() - 0.5) * (W * 0.03); // Tốc độ nhanh
+            this.vy = (Math.random() - 0.5) * (H * 0.03);
+            this.color = colors[Math.floor(Math.random() * colors.length)];
+            this.size = Math.random() * 5 + 3;
+            this.life = 80; // Sống ngắn
+        }
+        update() {
+            this.x += this.vx; this.y += this.vy;
+            this.size *= 0.96; this.life--;
+        }
+        draw() {
+            ctx.fillStyle = this.color;
+            ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+        }
+    }
+
+    // --- CLASS 2: HIỆU ỨNG NHẸ NHÀNG (Light) ---
+    class GentleParticle {
+        constructor() {
+            this.x = Math.random() * W; // Vị trí ngẫu nhiên chiều ngang
+            this.y = H + 20;            // Bắt đầu từ dưới đáy màn hình
+            this.vy = Math.random() * -1.5 - 0.5; // Bay lên rất chậm
+            this.opacity = 0;           // Bắt đầu ẩn
+            this.fadeIn = true;
+            this.type = Math.random() > 0.5 ? "heart" : "star"; // Tim hoặc Sao
+            this.size = Math.random() * 20 + 10;
+            this.oscillation = Math.random() * 0.02; // Độ lắc lư
+            this.angle = 0;
+        }
+        update() {
+            this.y += this.vy;
+            this.angle += this.oscillation;
+            this.x += Math.sin(this.angle) * 0.5; // Lắc lư nhẹ sang 2 bên
+            
+            // Hiện dần lên
+            if(this.fadeIn) {
+                this.opacity += 0.01;
+                if(this.opacity >= 0.8) this.fadeIn = false;
+            }
+            // Xóa nếu bay quá cao
+            if(this.y < -50) this.dead = true;
+        }
+        draw() {
+            ctx.globalAlpha = this.opacity;
+            ctx.font = this.size + "px Arial";
+            if(this.type === "heart") ctx.fillText("❤️", this.x, this.y);
+            else ctx.fillText("✨", this.x, this.y);
+            ctx.globalAlpha = 1;
+        }
+    }
+
+    function fireworks() {
+        let count = 0;
+        let interval = setInterval(() => {
+            for(let i=0; i<50; i++) particles.push(new FireworkParticle());
+            count++; if(count > 20) clearInterval(interval); // Nổ 20 đợt rồi dừng
+        }, 100);
+        loop();
+    }
+
+    function loop() {
+        requestAnimationFrame(loop);
+        ctx.clearRect(0,0,W,H);
+
+        // 1. Xử lý Pháo hoa (Nổ rồi tắt)
+        for(let i=0; i<particles.length; i++) {
+            particles[i].update(); particles[i].draw();
+            if(particles[i].life <= 0) { particles.splice(i,1); i--; }
+        }
+
+        // 2. Xử lý Hiệu ứng nhẹ nhàng (Thêm liên tục nếu đã kích hoạt)
+        if(isGentleMode) {
+            // Tỷ lệ sinh ra hạt mới (0.05 nghĩa là khoảng 20 frame mới ra 1 hạt -> thưa thớt)
+            if(Math.random() < 0.04) { 
+                gentleParticles.push(new GentleParticle());
+            }
+        }
+
+        for(let i=0; i<gentleParticles.length; i++) {
+            gentleParticles[i].update(); gentleParticles[i].draw();
+            if(gentleParticles[i].dead) { gentleParticles.splice(i,1); i--; }
+        }
+    }
+    
+    window.onresize = () => { W = window.innerWidth; H = window.innerHeight; canvas.width = W; canvas.height = H; };
+</script>
+
+</body>
+</html>

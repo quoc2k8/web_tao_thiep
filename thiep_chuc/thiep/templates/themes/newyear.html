@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chúc Mừng Năm Mới - Happy New Year</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Import Font Sang Trọng -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-red: #8E0E00;
+            --secondary-red: #1F1C18;
+            --gold: #FFD700;
+            --gold-gradient: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: radial-gradient(circle at center, var(--primary-red), var(--secondary-red));
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Canvas cho pháo hoa và hoa rơi */
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Tấm thiệp Glassmorphism */
+        .card {
+            position: relative;
+            z-index: 10;
+            background: rgba(142, 14, 0, 0.25);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 24px;
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 600px;
+            width: 85%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: floatUp 1s ease-out forwards;
+            overflow: hidden;
+        }
+
+        /* Trang trí viền góc (Corner Ornaments) */
+        .card::before, .card::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border: 3px solid var(--gold);
+            transition: all 0.5s ease;
+        }
+
+        .card::before {
+            top: 15px;
+            left: 15px;
+            border-right: none;
+            border-bottom: none;
+            border-radius: 20px 0 0 0;
+        }
+
+        .card::after {
+            bottom: 15px;
+            right: 15px;
+            border-left: none;
+            border-top: none;
+            border-radius: 0 0 20px 0;
+        }
+
+        /* Typography */
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            margin: 0;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            line-height: 1.2;
+        }
+
+        .name-highlight {
+            color: #FFD700;
+            display: block;
+            font-size: 4rem;
+            margin-top: 10px;
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+        }
+
+        p {
+            font-size: 1.3rem;
+            color: #fff;
+            margin: 30px 0 40px;
+            line-height: 1.6;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            font-style: italic;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding: 20px 0;
+        }
+
+        /* Button Sang chảnh */
+        button {
+            position: relative;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary-red);
+            background: var(--gold-gradient);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            overflow: hidden;
+        }
+
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+            transition: 0.5s;
+        }
+
+        button:hover::after {
+            left: 100%;
+        }
+
+        @keyframes floatUp {
+            from { opacity: 0; transform: translateY(50px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            h1 { font-size: 2.5rem; }
+            .name-highlight { font-size: 3rem; }
+            .card { padding: 40px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Canvas Background -->
+    <canvas id="canvas"></canvas>
+
+    <div class="card">
+        <h1>Chúc Mừng Năm Mới<br>
+            <span class="name-highlight">{{ info.person_name }}</span>
+        </h1>
+        <p>
+            "{{ info.cau_chuc }}"
+        </p>
+        <button onclick="bigExplosion()">🎇Bắn pháo hoa🎇</button>
+    </div>
+
+<script>
+    // SETUP CANVAS
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    
+    function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // CLASSES
+    class Firework {
+        constructor(x, y, targetX, targetY) {
+            this.x = x;
+            this.y = y;
+            this.targetX = targetX;
+            this.targetY = targetY;
+            this.speed = 3;
+            this.angle = Math.atan2(targetY - y, targetX - x);
+            this.velocities = {
+                x: Math.cos(this.angle) * this.speed,
+                y: Math.sin(this.angle) * this.speed
+            };
+            this.distanceToTarget = 0;
+            this.brightness = Math.random() * 50 + 50;
+            this.targetRadius = 5; 
+            this.history = []; // Trail effect
+        }
+        
+        update(index) {
+            this.history.push({x: this.x, y: this.y});
+            if(this.history.length > 5) this.history.shift();
+
+            this.x += this.velocities.x;
+            this.y += this.velocities.y;
+
+            let dx = this.targetX - this.x;
+            let dy = this.targetY - this.y;
+            this.distanceToTarget = Math.sqrt(dx*dx + dy*dy);
+
+            if(this.distanceToTarget < 5) {
+                fireworks.splice(index, 1);
+                createParticles(this.targetX, this.targetY);
+            }
+        }
+
+        draw() {
+            ctx.beginPath();
+            if(this.history.length > 0) {
+                ctx.moveTo(this.history[0].x, this.history[0].y);
+                for(let i=1; i<this.history.length; i++) {
+                    ctx.lineTo(this.history[i].x, this.history[i].y);
+                }
+            }
+            ctx.strokeStyle = `hsl(45, 100%, ${this.brightness}%)`; // Gold color
+            ctx.stroke();
+        }
+    }
+
+    class Particle {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.angle = Math.random() * Math.PI * 2;
+            this.speed = Math.random() * 5 + 1;
+            this.friction = 0.95;
+            this.gravity = 1;
+            this.hue = Math.random() * 360;
+            this.brightness = Math.random() * 50 + 50;
+            this.alpha = 1;
+            this.decay = Math.random() * 0.015 + 0.01;
+            this.velocities = {
+                x: Math.cos(this.angle) * this.speed,
+                y: Math.sin(this.angle) * this.speed
+            }
+        }
+
+        update(index) {
+            this.velocities.x *= this.friction;
+            this.velocities.y *= this.friction;
+            this.velocities.y += this.gravity * 0.05; // gravity
+            this.x += this.velocities.x;
+            this.y += this.velocities.y;
+            this.alpha -= this.decay;
+
+            if(this.alpha <= 0) {
+                particles.splice(index, 1);
+            }
+        }
+
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = this.alpha;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+            ctx.fillStyle = `hsl(${this.hue}, 100%, ${this.brightness}%)`;
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    // HOA MAI RƠI (Petals)
+    class Petal {
+        constructor() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height - height;
+            this.size = Math.random() * 5 + 5;
+            this.speedY = Math.random() * 1 + 0.5;
+            this.speedX = Math.random() * 2 - 1;
+            this.rotation = Math.random() * 360;
+            this.rotationSpeed = Math.random() * 2 - 1;
+        }
+        
+        update() {
+            this.y += this.speedY;
+            this.x += Math.sin(this.y * 0.01) + this.speedX * 0.1;
+            this.rotation += this.rotationSpeed;
+
+            if(this.y > height) {
+                this.y = -10;
+                this.x = Math.random() * width;
+            }
+        }
+
+        draw() {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate(this.rotation * Math.PI / 180);
+            ctx.fillStyle = '#FFD700'; // Vàng mai
+            ctx.beginPath();
+            // Vẽ hình cánh hoa đơn giản
+            ctx.ellipse(0, 0, this.size, this.size/2, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    // VARIABLES
+    let fireworks = [];
+    let particles = [];
+    let petals = [];
+
+    // INIT PETALS
+    for(let i=0; i<30; i++) {
+        petals.push(new Petal());
+    }
+
+    function createParticles(x, y) {
+        let count = 50;
+        for(let i=0; i<count; i++) {
+            particles.push(new Particle(x, y));
+        }
+    }
+
+    // ANIMATION LOOP
+    function loop() {
+        requestAnimationFrame(loop);
+        
+        // Background trail effect for motion blur
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; 
+        ctx.fillRect(0, 0, width, height);
+        
+        ctx.globalCompositeOperation = 'lighter';
+
+        // Draw Petals
+        petals.forEach(petal => {
+            petal.update();
+            petal.draw();
+        });
+
+        // Draw Fireworks
+        for(let i=0; i<fireworks.length; i++) {
+            fireworks[i].update(i);
+            fireworks[i].draw();
+        }
+
+        // Draw Particles
+        for(let i=0; i<particles.length; i++) {
+            particles[i].update(i);
+            particles[i].draw();
+        }
+    }
+
+    // ACTIONS
+    function bigExplosion() {
+        // Launch multiple fireworks
+        for(let i=0; i<10; i++) {
+            setTimeout(() => {
+                let startX = Math.random() * width;
+                let targetX = Math.random() * width;
+                let targetY = Math.random() * (height/2);
+                fireworks.push(new Firework(startX, height, targetX, targetY));
+            }, i * 200);
+        }
+    }
+
+    // Auto launch random firework every few seconds
+    setInterval(() => {
+        if(Math.random() > 0.7) {
+            let startX = Math.random() * width;
+            let targetX = Math.random() * width;
+            let targetY = Math.random() * (height/2);
+            fireworks.push(new Firework(startX, height, targetX, targetY));
+        }
+    }, 1500);
+
+    // Start
+    loop();
+
+</script>
+</body>
+</html>

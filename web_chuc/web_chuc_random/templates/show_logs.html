@@ -1,0 +1,48 @@
+<!-- show_logs.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Danh sách log</title>
+</head>
+<body>
+
+<h1>Dữ liệu đã lưu</h1>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Ngày giờ</th>
+        <th>Người cần chúc</th>
+        <th>Lời chúc</th>
+        <th>Loại thiệp</th>
+        <th>Chỉnh sửa</th>
+        <th>Xóa</th>
+    </tr>
+
+    {% for log in logs %}
+        <tr>
+            <td>{{ log.date|date:"Y-m-d H:i:s" }}</td>
+            <td><a href="{% url 'web_chuc_random:thu' log.id %}">{{ log.who }}</a></td>
+            <td>{{ log.loi_chuc }}</td>
+            <td>{{ log.loai }}</td>
+            <td><a href="{% url 'web_chuc_random:log_edit' log.id %}">Chỉnh sửa</a></td>
+            <td>
+                <form method="post" style="display:inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="log_id" value="{{ log.id }}">
+                    <button type="submit" onclick="return confirm('Xóa log này?')">
+                        Xóa
+                    </button>
+                </form>
+            </td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="6">Chưa có dữ liệu</td>
+        </tr>
+    {% endfor %}
+</table>
+
+<p><a href="{% url 'web_chuc_random:chuc' %}">Ghi log</a></p>
+
+</body>
+</html>

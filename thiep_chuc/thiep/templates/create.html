@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Trang tạo thiệp</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #e74c3c;
+            margin-top: 30px;
+        }
+
+        form {
+            width: 600px;
+            margin: 20px auto;
+            padding: 20px 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .radio-group {
+            margin-bottom: 15px;
+        }
+
+        .radio-group label {
+            margin-right: 15px;
+            cursor: pointer;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        table {
+            width: 90%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        table caption {
+            caption-side: top;
+            font-size: 20px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        th, td {
+            border-bottom: 1px solid #ddd;
+            padding: 12px 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #3498db;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f2f2f2;
+        }
+
+        td a {
+            color: #2980b9;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        td a:hover {
+            text-decoration: underline;
+        }
+
+        td button {
+            background: #e74c3c;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        td button:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🎉 Đây là trang tạo thiệp 🎉</h1>
+
+<!-- FORM TẠO THIỆP -->
+<form method="POST" action="{% url 'thiep:create' %}">
+    {% csrf_token %}
+    <input type="text" name="name" placeholder="Tên người muốn tạo thiệp" required>
+    <textarea name="loi_chuc" id="loi_chuc" placeholder="Lời chúc" rows="4" required></textarea>
+
+    <div class="radio-group">
+        <input type="radio" name="loai_thiep" value="birthday" id="birthday" checked>
+        <label for="birthday">Thiệp sinh nhật</label>
+
+        <input type="radio" name="loai_thiep" value="newyear" id="newyear">
+        <label for="newyear">Thiệp năm mới</label>
+    </div>
+
+    <button type="submit">Tạo thiệp</button>
+</form>
+
+<!-- BẢNG DANH SÁCH THIỆP -->
+<table>
+    <caption>Danh sách thiệp đã làm</caption>
+    <tr>
+        <th>Ngày tạo</th>
+        <th>Tên người được gửi</th>
+        <th>Lời chúc</th>
+        <th>Loại thiệp</th>
+        <th>Chỉnh sửa</th>
+        <th>Xóa</th>
+    </tr>
+
+    {% for info in infos %}
+    <tr>
+        <td>{{ info.date }}</td>
+        <td><a href="{% url 'thiep:thiep' info.id %}">{{ info.person_name }}</a></td>
+        <td width="300">{{ info.cau_chuc }}</td>
+        <td>{{ info.loai_thiep }}</td>
+        <td><a href="{% url 'thiep:update_id' info.id %}">Chỉnh sửa</a></td>
+        <td>
+            <form action="{% url 'thiep:delete_id' info.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" onclick="return confirm('Xóa tệp này?')">Xóa</button>
+            </form>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="6" style="text-align:center;">Không có dữ liệu</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

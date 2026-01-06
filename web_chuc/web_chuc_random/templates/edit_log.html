@@ -1,0 +1,23 @@
+<h1>Chỉnh sửa</h1>
+
+<form method="post">
+  {% csrf_token %}
+
+  <input type="text" name="ten" value="{{ log.who }}">
+
+  <textarea name="loichuc">{{ log.loi_chuc }}</textarea>
+
+  <label>
+    <input type="radio" name="loai" value="birthday"
+      {% if log.loai == "birthday" %}checked{% endif %}>
+    Sinh nhật
+  </label>
+
+  <label>
+    <input type="radio" name="loai" value="newyear"
+      {% if log.loai == "newyear" %}checked{% endif %}>
+    Năm mới
+  </label>
+
+  <button type="submit">Lưu</button>
+</form>
